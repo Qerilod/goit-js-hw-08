@@ -85,6 +85,23 @@ const galleryLayout = images
 
 const galleryUl = document.querySelector(".gallery");
 galleryUl.innerHTML = galleryLayout;
+galleryUl.addEventListener("click", (event) => {
+  event.preventDefault();
+  const imgClicked = event.target.dataset.source;
+  if (imgClicked) {
+    console.log(imgClicked);
+
+    const imgModal = basicLightbox.create(`
+    <div>
+      <img src="${imgClicked}" width="1400" height="900">
+      </div>`);
+    imgModal.show();
+  }
+});
+
+// const instance = basicLightbox.create(`
+//     <img src="assets/images/image.png" width="800" height="600">
+// `);
 
 // видалення ком між елементами li для стилізації
 document.querySelectorAll(".gallery li").forEach((li) => {
@@ -97,19 +114,6 @@ document.querySelectorAll(".gallery li").forEach((li) => {
   }
 });
 // /////////////////////////////////////////////// //
-
-galleryUl.addEventListener("click", (event) => {
-  event.preventDefault();
-  const imgClicked = event.target.dataset.source;
-  if (imgClicked) {
-    console.log(imgClicked);
-
-    const imgModal = basicLightbox
-      .create(`<img width = "1400" height="900" src="${imgClicked}">`)
-      .show();
-  }
-});
-
 // preview — посилання на маленьку версію зображення для картки галереї
 // original — посилання на велику версію зображення для модального вікна
 // description — текстовий опис зображення, для атрибута alt малого зображення та підпису великого зображення в модалці.
