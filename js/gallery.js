@@ -65,55 +65,47 @@ const images = [
     description: "Lighthouse Coast Sea",
   },
 ];
-// створення розмітки
-const galleryLayout = images
-  .map(({ preview, original, description }) => {
-    return `
-    <li class="gallery-item">
-   <a class="gallery-link" href="${original}">
- <img
-   class="gallery-image"
-   src="${preview}"
-   data-source="large-image.jpg"
-   alt="${description}"
-  />
- </a>
-</li>
-`;
-  })
-  .join();
 
-const galleryUl = document.querySelector(".gallery");
-galleryUl.innerHTML = galleryLayout;
-galleryUl.addEventListener("click", (event) => {
+const gallery = document.querySelector(".gallery");
+const ModalImg = basicLightbox.create(
+  `<img class="large-image-item" src="" width="1112" height="640">`,
+  {
+    onShow: () => {
+      document.addEventListener("keydown", onRemoveListener);
+    },
+    onClose: () => {
+      document.removeEventListener("keydown", onRemoveListener);
+    },
+  }
+);
+
+function onRemoveListener(event) {
+  if (event.key === "Escape") {
+    ModalImg.close();
+  }
+}
+gallery.innerHTML = images.reduce(
+  (acc, item) =>
+    acc +
+    `<li class="gallery-item">
+        <a class="gallery-link" href="${item.original}">
+            <img
+            class="gallery-image"
+            src="${item.preview}"
+            data-source="${item.original}"
+            alt="${item.description}"
+            width="360"
+            height="200" />
+        </a>
+    </li>`,
+  ""
+);
+gallery.addEventListener("click", (event) => {
   event.preventDefault();
-  const imgClicked = event.target.dataset.source;
-  if (imgClicked) {
-    console.log(imgClicked);
-
-    const imgModal = basicLightbox.create(`
-    <div>
-      <img src="${imgClicked}" width="1400" height="900">
-      </div>`);
-    imgModal.show();
+  if (event.target.nodeName !== "IMG") {
+    return;
   }
+  const instanceImg = ModalImg.element().querySelector(".large-image-item");
+  instanceImg.src = event.target.dataset.source;
+  ModalImg.show();
 });
-
-// const instance = basicLightbox.create(`
-//     <img src="assets/images/image.png" width="800" height="600">
-// `);
-
-// видалення ком між елементами li для стилізації
-document.querySelectorAll(".gallery li").forEach((li) => {
-  if (
-    li.nextSibling &&
-    li.nextSibling.nodeType === 3 &&
-    li.nextSibling.nodeValue.trim() === ","
-  ) {
-    li.nextSibling.remove();
-  }
-});
-// /////////////////////////////////////////////// //
-// preview — посилання на маленьку версію зображення для картки галереї
-// original — посилання на велику версію зображення для модального вікна
-// description — текстовий опис зображення, для атрибута alt малого зображення та підпису великого зображення в модалці.
